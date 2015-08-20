@@ -24,10 +24,12 @@ public class RedisKit {
     }
 
     public  static  <T> T get(Object key){
-        List<T> list=new ArrayList<>();
         Jedis jedis= jedisResource.get(false);
         try{
             String json=jedis.get(String.valueOf(key));
+            if(json==null){
+                return null;
+            }
             return (T)FastJsonKit.jsonToJava(json);
         }finally {
             jedisResource.release();
@@ -47,6 +49,9 @@ public class RedisKit {
         Jedis jedis= jedisResource.get(false);
         try{
             String json=jedis.hget(String.valueOf(key),String.valueOf(fieldKey));
+            if(json==null){
+                return null;
+            }
             return (T)FastJsonKit.jsonToJava(json);
         }finally {
             jedisResource.release();
