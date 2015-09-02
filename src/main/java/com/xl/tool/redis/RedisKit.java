@@ -73,4 +73,21 @@ public class RedisKit {
             jedisResource.release();
         }
     }
+    public static long hdel(Object key,Object fieldKey){
+        Jedis jedis=jedisResource.get(false);
+        try {
+            return jedis.hdel(String.valueOf(key),String.valueOf(fieldKey));
+        }finally {
+            jedisResource.release();
+        }
+
+    }
+    public static long del(Object key){
+        Jedis jedis=jedisResource.get(false);
+        try {
+            return jedis.hdel(String.valueOf(key));
+        }finally {
+            jedisResource.release();
+        }
+    }
 }
