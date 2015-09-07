@@ -45,6 +45,7 @@ public class RedisKit {
             jedisResource.release();
         }
     }
+
     public static <T> T hget(Object key,Object fieldKey){
         Jedis jedis= jedisResource.get(false);
         try{
@@ -53,6 +54,18 @@ public class RedisKit {
                 return null;
             }
             return (T)FastJsonKit.jsonToJava(json);
+        }finally {
+            jedisResource.release();
+        }
+    }
+    public static <T> T hdel(Object key,Object fieldKey){
+        Jedis jedis= jedisResource.get(false);
+        try{
+            Long ret= jedis.hdel(String.valueOf(key),String.valueOf(fieldKey));
+            if(ret==null){
+                return null;
+            }
+            return (T)ret;
         }finally {
             jedisResource.release();
         }
