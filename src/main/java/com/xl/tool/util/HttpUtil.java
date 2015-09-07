@@ -321,7 +321,7 @@ public class HttpUtil {
 			int stat = conn.getResponseCode();
 			int length=conn.getContentLength();
 			if (stat != HTTP_CODE_OK) {
-				logger.warn("post <<<<<<"+stat +" "+ host +  " params:" + params);
+				logger.warn("post <<<<<<" + stat + " " + host + " params:" + params);
 				return null;
 			}
 			InputStream input=conn.getInputStream();
@@ -348,6 +348,41 @@ public class HttpUtil {
 		}
 		return null;
 	}
+
+	public static String readContentFromGet(String getUrl,String encode) throws IOException {
+		// 拼凑get请求的URL字串，使用URLEncoder.encode对特殊和不可见字符进行编码
+		URL getURL = new URL(getUrl);
+		//Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.oa.com", 8080));
+		// 根据拼凑的URL，打开连接，URL.openConnection函数会根据URL的类型，
+		// 返回不同的URLConnection子类的对象，这里URL是一个http，因此实际返回的是HttpURLConnection
+		//HttpURLConnection httpURLConnection = (HttpURLConnection) getURL.openConnection(proxy);
+		HttpURLConnection httpURLConnection = (HttpURLConnection) getURL.openConnection();
+		try {
+			httpURLConnection.connect();
+			InputStream inptStream = httpURLConnection.getInputStream();
+			return dealResponseResult(inptStream,encode);
+
+		} finally {
+			httpURLConnection.disconnect();
+		}
+	}
+
+	public static String dealResponseResult(InputStream inputStream,String encodeing) throws UnsupportedEncodingException {
+		String resultData = null;      //存储处理结果
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		byte[] data = new byte[1024];
+		int len = 0;
+		try {
+			while ((len = inputStream.read(data)) != -1) {
+				byteArrayOutputStream.write(data, 0, len);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		resultData = new String(byteArrayOutputStream.toByteArray(),encodeing);
+		return resultData;
+	}
+
 	public static void main(String[] args) {
 		System.out.println(getRet("http://192.168.100.13:8000/GameDataHanlder/login.do",null, null,null));
 	}
