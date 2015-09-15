@@ -3,10 +3,7 @@ package com.xl.tool.redis;
 import com.xl.tool.util.FastJsonKit;
 import redis.clients.jedis.Jedis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Administrator on 2015/8/20.
@@ -76,7 +73,7 @@ public class RedisKit {
     public static long hdel(Object key,Object fieldKey){
         Jedis jedis=jedisResource.get(false);
         try {
-            return jedis.hdel(String.valueOf(key),String.valueOf(fieldKey));
+            return jedis.hdel(String.valueOf(key), String.valueOf(fieldKey));
         }finally {
             jedisResource.release();
         }
@@ -86,6 +83,50 @@ public class RedisKit {
         Jedis jedis=jedisResource.get(false);
         try {
             return jedis.hdel(String.valueOf(key));
+        }finally {
+            jedisResource.release();
+        }
+    }
+    public static long push(Object key,Object... values){
+        Jedis jedis=jedisResource.get(false);
+        try {
+            String[] list=new String[values.length];
+            int i=0;
+            for(Object value:values){
+                list[i]=FastJsonKit.javaToJsonWithClass(value);
+            }
+            return jedis.lpush(String.valueOf(key), list);
+        }finally {
+            jedisResource.release();
+        }
+    }
+    /**
+     * push并且修剪列表
+     * */
+    public static String lpushAndLtrim(Object key, Object[] values, int start, int end){
+        Jedis jedis=jedisResource.get(false);
+        try {
+            String[] list=new String[values.length];
+            int i=0;
+            for(Object value:values){
+                list[i]=FastJsonKit.javaToJsonWithClass(value);
+                i++;
+            }
+            jedis.lpush(String.valueOf(key),list);
+            return jedis.ltrim(String.valueOf(key), start, end);
+        }finally {
+            jedisResource.release();
+        }
+    }
+    public static List<Object> lrange(Object key,int start,int end){
+        Jedis jedis=jedisResource.get(false);
+        try {
+            List<String> listString=jedis.lrange(String.valueOf(key),start,end);
+            List<Object> result=new ArrayList<>(listString.size());
+            for(String value:listString){
+               result.add(FastJsonKit.jsonToJava(value));
+            }
+            return result;
         }finally {
             jedisResource.release();
         }
