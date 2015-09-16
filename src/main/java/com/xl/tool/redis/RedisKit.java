@@ -9,69 +9,74 @@ import java.util.*;
  * Created by Administrator on 2015/8/20.
  */
 public class RedisKit {
-    public static final JedisResource jedisResource=JedisResource.getInstance();
-    public static void set(Object key,Object value){
-        Jedis jedis= jedisResource.get(false);
-        try{
+    public static final JedisResource jedisResource = JedisResource.getInstance();
+
+    public static void set(Object key, Object value) {
+        Jedis jedis = jedisResource.get(false);
+        try {
             jedis.set(String.valueOf(key), FastJsonKit.javaToJsonWithClass(value));
-        }finally {
+        } finally {
             jedisResource.release();
         }
 
     }
 
-    public  static  <T> T get(Object key){
-        Jedis jedis= jedisResource.get(false);
-        try{
-            String json=jedis.get(String.valueOf(key));
-            if(json==null){
+    public static <T> T get(Object key) {
+        Jedis jedis = jedisResource.get(false);
+        try {
+            String json = jedis.get(String.valueOf(key));
+            if (json == null) {
                 return null;
             }
-            return (T)FastJsonKit.jsonToJava(json);
-        }finally {
+            return (T) FastJsonKit.jsonToJava(json);
+        } finally {
             jedisResource.release();
         }
 
     }
 
-    public static void hset(Object key,Object fieldKey,Object value){
-        Jedis jedis= jedisResource.get(false);
-        try{
-            jedis.hset(String.valueOf(key),String.valueOf(fieldKey), FastJsonKit.javaToJsonWithClass(value));
-        }finally {
+    public static void hset(Object key, Object fieldKey, Object value) {
+        Jedis jedis = jedisResource.get(false);
+        try {
+            jedis.hset(String.valueOf(key), String.valueOf(fieldKey), FastJsonKit.javaToJsonWithClass(value));
+        } finally {
             jedisResource.release();
         }
     }
-    public static <T> T hget(Object key,Object fieldKey){
-        Jedis jedis= jedisResource.get(false);
-        try{
-            String json=jedis.hget(String.valueOf(key),String.valueOf(fieldKey));
-            if(json==null){
+
+    public static <T> T hget(Object key, Object fieldKey) {
+        Jedis jedis = jedisResource.get(false);
+        try {
+            String json = jedis.hget(String.valueOf(key), String.valueOf(fieldKey));
+            if (json == null) {
                 return null;
             }
-            return (T)FastJsonKit.jsonToJava(json);
-        }finally {
+            return (T) FastJsonKit.jsonToJava(json);
+        } finally {
             jedisResource.release();
         }
     }
-    public static long incr(String key){
-        Jedis jedis= jedisResource.get(false);
-        try{
+
+    public static long incr(String key) {
+        Jedis jedis = jedisResource.get(false);
+        try {
             return jedis.incr(key);
-        }finally {
+        } finally {
             jedisResource.release();
         }
     }
-    public static long decr(String key){
-        Jedis jedis= jedisResource.get(false);
-        try{
+
+    public static long decr(String key) {
+        Jedis jedis = jedisResource.get(false);
+        try {
             return jedis.decr(key);
-        }finally {
+        } finally {
             jedisResource.release();
         }
     }
-    public static long hdel(Object key,Object fieldKey){
-        Jedis jedis=jedisResource.get(false);
+
+    public static long hdel(Object key, Object fieldKey) {
+        Jedis jedis = jedisResource.get(false);
         try {
             return jedis.hdel(String.valueOf(key), String.valueOf(fieldKey));
         }finally {
@@ -79,11 +84,12 @@ public class RedisKit {
         }
 
     }
-    public static long del(Object key){
-        Jedis jedis=jedisResource.get(false);
+
+    public static long del(Object key) {
+        Jedis jedis = jedisResource.get(false);
         try {
-            return jedis.hdel(String.valueOf(key));
-        }finally {
+            return jedis.del(String.valueOf(key));
+        } finally {
             jedisResource.release();
         }
     }
