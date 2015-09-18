@@ -10,7 +10,14 @@ import java.util.*;
  */
 public class RedisKit {
     public static final JedisResource jedisResource = JedisResource.getInstance();
-
+    public static void setex(Object key,int expired,Object value){
+        Jedis jedis = jedisResource.get(false);
+        try {
+            jedis.setex(String.valueOf(key),expired,FastJsonKit.javaToJsonWithClass(value) );
+        } finally {
+            jedisResource.release();
+        }
+    }
     public static void set(Object key, Object value) {
         Jedis jedis = jedisResource.get(false);
         try {
@@ -124,7 +131,7 @@ public class RedisKit {
             jedisResource.release();
         }
     }
-    public static List<Object> lrange(Object key,int start,int end){
+    public static List lrange(Object key,int start,int end){
         Jedis jedis=jedisResource.get(false);
         try {
             List<String> listString=jedis.lrange(String.valueOf(key),start,end);
