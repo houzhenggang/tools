@@ -1,12 +1,10 @@
 package com.xl.tool.redis;
 
 
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import java.util.Properties;
 
@@ -20,9 +18,9 @@ public  class JedisResource {
     private ThreadLocal<JedisTransaction> localTransaction=new ThreadLocal<JedisTransaction>();
 
     /***最大jedis实列数*/
-    private  int maxTotal=1000;
+    private  int maxTotal=10;
     /**最大闲置数*/
-    private int maxIdle=50;
+    private int maxIdle=5;
     /**获取连接超时时间*/
     private long maxWait=30000l;
     /**是否进行validate*/
@@ -41,6 +39,7 @@ public  class JedisResource {
 
     private int port;
 
+    private int database;
     private JedisPool realPool;
     private static final JedisResource instance=new JedisResource();
     private JedisResource(){
@@ -60,6 +59,11 @@ public  class JedisResource {
         this.createCheck=Boolean.valueOf(properties.getProperty("redis.createCheck"));
         this.keepAliveTime=Long.valueOf(properties.getProperty("redis.keepAliveTime"));
         this.idlePeriod=Long.valueOf(properties.getProperty("redis.idlePeriod"));
+        String database=properties.getProperty("redis.database");
+        if(database!=null){
+            this.database=Integer.parseInt(database);
+        }
+
     }
     public synchronized JedisResource init(Properties properties) {
         if(realPool!=null){
@@ -72,7 +76,12 @@ public  class JedisResource {
         config.setMaxWaitMillis(maxWait);
         config.setTestWhileIdle(validate);
         config.setTestOnBorrow(borrowCheck);
-        realPool=new JedisPool(config,host,port);
+        if(this.database>0){
+            this.realPool=new JedisPool(config,this.host,this.port, Protocol.DEFAULT_TIMEOUT,null,this.database);
+        }else{
+            realPool=new JedisPool(config,host,port);
+        }
+
         logger.info("jedis pool init on "+host+":"+port);
         return instance;
     }

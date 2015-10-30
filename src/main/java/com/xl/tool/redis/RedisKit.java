@@ -1,6 +1,5 @@
 package com.xl.tool.redis;
 
-import com.xl.tool.util.FastJsonKit;
 import redis.clients.jedis.Jedis;
 
 import java.util.*;
@@ -13,7 +12,7 @@ public class RedisKit {
     public static void setex(Object key,int expired,Object value){
         Jedis jedis = jedisResource.get(false);
         try {
-            jedis.setex(String.valueOf(key),expired,FastJsonKit.javaToJsonWithClass(value) );
+            jedis.setex(String.valueOf(key), expired, FastJsonKit.javaToJsonWithClass(value));
         } finally {
             jedisResource.release();
         }
@@ -64,6 +63,15 @@ public class RedisKit {
         }
     }
 
+    public static String hgetString(Object key, Object fieldKey){
+        Jedis jedis = jedisResource.get(false);
+        try {
+            String json = jedis.hget(String.valueOf(key), String.valueOf(fieldKey));
+            return json;
+        } finally {
+            jedisResource.release();
+        }
+    }
     public static long incr(String key) {
         Jedis jedis = jedisResource.get(false);
         try {

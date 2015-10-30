@@ -1,4 +1,4 @@
-package com.xl.tool.util;
+package com.xl.tool.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
