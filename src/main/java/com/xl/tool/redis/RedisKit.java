@@ -152,4 +152,5 @@ public class RedisKit {
             jedisResource.release();
         }
     }
+
 }

@@ -15,7 +15,7 @@ import java.util.Properties;
 public  class JedisResource {
 
     private Logger logger= LoggerFactory.getLogger(JedisResource.class);
-    private ThreadLocal<JedisTransaction> localTransaction=new ThreadLocal<JedisTransaction>();
+    private ThreadLocal<Jedis> localTransaction=new ThreadLocal<Jedis>();
 
     /***最大jedis实列数*/
     private  int maxTotal=10;
@@ -88,22 +88,20 @@ public  class JedisResource {
     public Jedis get(boolean isTransaction){
         if(localTransaction.get()==null){
             Jedis jedis=realPool.getResource();
-            JedisTransaction redisTransaction=new JedisTransaction(jedis);
-            if(isTransaction){
-                Transaction transaction=jedis.multi();
-                redisTransaction.setTransaction(transaction);
-            }
-            localTransaction.set(redisTransaction);
+            localTransaction.set(jedis);
             return  jedis;
         }else{
-            return localTransaction.get().getJedis();
+            return localTransaction.get();
         }
+    }
+    public Jedis get(){
+        return get(false);
     }
 
     public void  release(){
         if(localTransaction.get()!=null){
-            if(localTransaction.get().getJedis()!=null){
-                realPool.returnResource(localTransaction.get().getJedis());
+            if(localTransaction.get()!=null){
+                realPool.returnResource(localTransaction.get());
                 localTransaction.remove();
             }
         }
