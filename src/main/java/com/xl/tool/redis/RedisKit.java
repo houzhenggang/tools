@@ -152,5 +152,27 @@ public class RedisKit {
             jedisResource.release();
         }
     }
+    public static boolean tryLock(String key,int expireSeconds){
+        Jedis jedis=jedisResource.get(false);
+        boolean value=false;
+        try{
+            Long result = jedis.setnx(key,"0");
+            if(result>0){
+                jedis.expire(key,expireSeconds);
+                value = true;
+            }
+        }finally {
+            jedisResource.release();
+        }
 
+        return value;
+    }
+    public static void releaseLock(String key){
+        Jedis jedis=jedisResource.get(false);
+        try{
+            jedis.del(key);
+        }finally {
+            jedisResource.release();
+        }
+    }
 }
