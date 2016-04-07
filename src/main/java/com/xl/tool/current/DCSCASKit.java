@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DCSCASKit {
     private static final ThreadLocal<Map<String,AtomicInteger>> threadLocal=new ThreadLocal<>();
     private static final Logger log= LoggerFactory.getLogger(DCSCASKit.class);
-    private boolean lock(String key, long timeout){
+    public static boolean lock(String key, long timeout){
         Map<String,AtomicInteger> lockMap=threadLocal.get();
         if(lockMap==null){
             lockMap=new ConcurrentHashMap<>();
@@ -46,7 +46,7 @@ public class DCSCASKit {
         threadLocal.set(lockMap);
         return canOp;
     }
-    private void unlock(String key){
+    public static void unlock(String key){
         Map<String,AtomicInteger> lockMap=threadLocal.get();
         if(lockMap==null){
             return;
