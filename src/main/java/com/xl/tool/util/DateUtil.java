@@ -16,6 +16,8 @@ public class DateUtil {
     public static final long DAY_MILLS=86400000L;
     public static final long MONTH_MILLS=2592000000L;
     public static final long WEEK_MILLS=604800000L;
+    public static final int DAY_SECONDS=(int)DAY_MILLS/1000;
+    public static final int WEEK_SECONDS=(int)WEEK_MILLS/1000;
     public static final SimpleDateFormat YYYY_MM_DD_HH_MM_SS_FORMAT=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**
